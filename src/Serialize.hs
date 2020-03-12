@@ -3,7 +3,8 @@ module Serialize where
 import qualified Data.ByteString as B
 import Data.Word
 import Data.Bits
-
+import Numeric
+import Utils
 import Control.Monad
 import Control.Applicative
 
@@ -43,24 +44,24 @@ class Serializable a where
     get :: Getter a
     put :: a -> B.ByteString
 
-instance Serializable Word8 where
-    put = B.singleton
-    get = Getter $ \b ->
-        if (B.length b > 0) then
-            Just (B.head b, B.tail b)
-        else Nothing
+instance (BytesBE x) => Serializable (Wrapper x) where
+    get = Getter $ (\(v, l) -> Just (wrap v, B.pack l)) . unbytes . B.unpack
+    put = B.pack . bytes . unwrap
 
-instance Serializable Word16 where
-    put x = B.pack [
-        fromIntegral (x `shiftR` 8)
-        ,fromIntegral x]
-    get = Getter $ \b ->
-        if (B.length b > 1) then
-            let [x, y] = B.unpack . B.take 2 $ b in Just
-                (((fromIntegral x) `shiftL` 8) +
-                (fromIntegral y), B.drop 2 b)
-        else Nothing
+instance (Serializable x) => Serializable [x] where
+    get = do
+        l <- (get :: Getter (Wrapper Word16)) -- max list size = 65536
+        let len = fromIntegral . unwrap $ l
+        performN len decode
+    put xs = B.append (put (wrap (fromIntegral . length $ xs :: Word16))) $ (B.concat . map encode) xs
 
---encode :: (Serializable a) => a -> B.ByteString
+encode :: (Serializable a) => a -> B.ByteString
+encode a = (\b -> (put . wrap . (fromIntegral :: (Integral x) => x -> Word32) $ B.length b) `B.append` b) (put a)
 
---decode :: (Serializable a) => Getter a
+decode :: (Serializable a) => Getter a
+decode = Getter $ \b ->
+    let (h, _) = (unbytes . B.unpack . B.take 4) b
+        t = B.drop 4 b
+        r = B.drop h t in do
+            (x, _) <- runGet get (B.take h t)
+            return (x, r)

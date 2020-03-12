@@ -1,8 +1,8 @@
 module LoadWorld where
 
 import Control.DeepSeq
-import Common
 import WorldTypes
+import ParseHelp
 import qualified Data.Map.Strict as Map
 import qualified Data.Vector.Storable as VS
 import qualified Data.ByteString as B
@@ -16,7 +16,7 @@ import System.IO
 serializePortal :: PortalData -> [Word8]
 serializePortal (PortalData (a, b, c, d)) = concatMap listArray6 [a, b, c, d]
 
-deserializePortal :: B.ByteString -> Offset -> PortalData
+deserializePortal :: B.ByteString -> Int -> PortalData
 deserializePortal str o = let [a, b, c, d] = map (makeArray6FromSlice str) [o, o+6, o+12, o+18] in
     PortalData (a, b, c, d)
 
@@ -26,7 +26,7 @@ unwrapRefChunk (RefChunk x) = x
 serializeRefChunk :: RefChunk -> B.ByteString
 serializeRefChunk = B.pack . foldr (\(x, y) -> \ls -> x:y:ls) [] . unwrapRefChunk
 
-deserializeRefChunk :: B.ByteString -> Offset -> RefChunk
+deserializeRefChunk :: B.ByteString -> Int -> RefChunk
 deserializeRefChunk str off = RefChunk $ do
     tile <- [0,2..510]
     return (str `B.index` (tile + off), str `B.index` (tile + off + 1))

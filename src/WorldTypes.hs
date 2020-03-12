@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 module WorldTypes where
 
-import Common
+import ParseHelp
 import GHC.Generics (Generic)
 import Control.DeepSeq (NFData)
 import Data.Word (Word8)
