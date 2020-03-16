@@ -3,6 +3,7 @@ module LoadWorld where
 import Control.DeepSeq
 import WorldTypes
 import ParseHelp
+import Serialize
 import qualified Data.Map.Strict as Map
 import qualified Data.Vector.Storable as VS
 import qualified Data.ByteString as B
@@ -39,18 +40,16 @@ serializeRefRegion (RefRegion ch pd) =
     in
         h `B.cons` bmp `B.append` pdr
 
-deserializeRefRegion :: B.ByteString -> Maybe RefRegion
+deserializeRefRegion :: B.ByteString -> Maybe (RefRegion, B.ByteString)
 deserializeRefRegion bsr =
     let npd = fromIntegral (B.head bsr)
         str = B.drop 1 bsr
         chunks = [0,512..130560]
         portals = if npd == 0 then [] else [x*24 + 131072 | x <- [1..npd]]
+        len = 131072 + (npd * 24)
     in
-        Just $ RefRegion (map (deserializeRefChunk str) chunks) (map (deserializePortal str) portals)
+        Just (RefRegion (map (deserializeRefChunk str) chunks) (map (deserializePortal str) portals), B.drop len str)
 
-loadRegion :: RegionIndex -> FilePath -> LoadedRegions -> IO (Maybe LoadedRegions)
-loadRegion index path (LoadedRegions map) = do
-    h <- openFile path ReadMode
-    str <- B.hGetContents h
-    let ld = fmap (\re -> (LoadedRegions (Map.insert index re map))) (deserializeRefRegion str)
-    ld `deepseq` return ld
+instance Serializable RefRegion where
+    get = Getter deserializeRefRegion
+    put = serializeRefRegion
