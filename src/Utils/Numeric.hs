@@ -1,4 +1,4 @@
-module Numeric where
+module Utils.Numeric where
 
 import Data.Word
 import Data.Bits

@@ -1,10 +1,10 @@
-module Serialize where
+module Parsing.ParseUtils.Serialize where
 
 import qualified Data.ByteString as B
 import Data.Word
 import Data.Bits
-import Numeric
-import Utils
+import Utils.Numeric
+import Utils.Utils
 import Control.Monad
 import Control.Applicative
 

@@ -1,13 +1,10 @@
 module Main where
 
-import Control.DeepSeq
-import LoadWorld
-import Serialize
-import WorldTypes
+import Types.Entity.Entity
+import Types.World.World
+import Parsing.ParseWorld
+
 import Text.Printf
-import System.CPUTime
-import qualified Data.ByteString as B
-import qualified Data.Map.Strict as Map
 
 diff :: Integer -> Integer -> IO ()
 diff start end = do

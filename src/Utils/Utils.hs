@@ -1,4 +1,4 @@
-module Utils where
+module Utils.Utils where
 
 type Array6 a = (a, a, a, a, a, a)
 listArray6 :: Array6 a -> [a]

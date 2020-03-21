@@ -1,4 +1,4 @@
-module ParseHelp where
+module Parsing.ParseUtils.ParseUtils where
 
 import qualified Data.ByteString as B
 
