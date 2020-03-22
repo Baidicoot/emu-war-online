@@ -1,7 +1,5 @@
-module Types.Entity.Broadcasts where
+module Types.Entity.Broadcast where
 -- gameplay-related types
-
-type DeltaTime = Double
 
 data Broadcast = Broadcast String String deriving(Eq) -- entity -> entity communication
 

@@ -2,7 +2,8 @@ module Main where
 
 import Types.Entity.Entity
 import Types.World.World
-import Parsing.ParseWorld
+import Parsing.World.Parser
+import Logic.Game.Game
 
 import Text.Printf
 

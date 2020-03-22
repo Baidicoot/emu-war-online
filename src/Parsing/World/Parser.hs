@@ -1,4 +1,4 @@
-module Parsing.ParseWorld where
+module Parsing.World.Parser where
 
 import Types.World.World
 import Parsing.ParseUtils.ParseUtils

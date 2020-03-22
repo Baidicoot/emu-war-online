@@ -4,13 +4,26 @@ module Types.Entity.Entity where
 
 import Parsing.ParseUtils.Serialize
 import Types.World.World
-import Types.Entity.Broadcasts
+import Types.Entity.Broadcast
+import Logic.Game.Types (DeltaTime)
+import qualified Data.Map.Strict as Map
 
-data EntityData = EntityData Int
+data EntityData = EntityData {
+    hp :: Int
+}
 data EntitySight = EntitySight [Tile] [EntityWrapper]
 
 class (Serializable e) => Entity e where
-    update :: DeltaTime -> EntitySight -> [Broadcast] -> [Event] -> e -> (e, [Broadcast], [Action])
-    getData :: e -> EntityData
+    updateE :: DeltaTime -> [Event] -> [Broadcast] -> EntitySight -> e -> (e, [Broadcast], [Action])
+    getDataE :: e -> EntityData
 
 data EntityWrapper = forall e. (Entity e) => EntityWrapper e
+
+update :: DeltaTime -> [Event] -> [Broadcast] -> EntitySight -> EntityWrapper -> (EntityWrapper, [Broadcast], [Action])
+update a b c d (EntityWrapper e) = let (e', f, g) = updateE a b c d e in
+    (EntityWrapper e', f, g)
+
+getData :: EntityWrapper -> EntityData
+getData (EntityWrapper e) = getDataE e
+
+type RegionEntityTable = RegionMap [EntityWrapper]

@@ -43,7 +43,8 @@ newtype PortalData = PortalData (Array6 Word8, Array6 Word8, Array6 Word8, Array
 data Region = Region RegionTileData [PortalData] deriving(Generic) -- parsed form to be used in-game
 
 type RegionIndex = (Word8, Word8, Word8)
-newtype LoadedRegions = LoadedRegions (Map.Map RegionIndex Region)
+type RegionMap = Map.Map RegionIndex
+type RegionBlobTable = RegionMap Region
 
 instance NFData RegionTileData
 instance NFData PortalData
