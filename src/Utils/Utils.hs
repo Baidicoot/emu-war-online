@@ -3,9 +3,11 @@ module Utils.Utils where
 import qualified Data.Map as Map
 import qualified Data.Set as Set
 
-type Array6 a = (a, a, a, a, a, a)
-listArray6 :: Array6 a -> [a]
-listArray6 (a, b, c, d, e, f) = [a, b, c, d, e, f]
+import Data.List (groupBy)
+
+type Array5 a = (a, a, a, a, a)
+listArray5 :: Array5 a -> [a]
+listArray5 (a, b, c, d, e) = [a, b, c, d, e]
 
 newtype Wrapper a = Wrapper a
 unwrap :: Wrapper a -> a
@@ -44,3 +46,10 @@ zipMapsInter a b =
 
 instance Ord k => Zippable (Map.Map k) where
   zip' = zipMapsInter
+
+groupKeyList :: (Eq k) => [(k, a)] -> [(k, [a])]
+groupKeyList = map (\xs@((k, _):_) -> (k, map (\(_, a) -> a) xs)) . groupBy (\(k, _) (k', _) -> k == k')
+
+fromListToLists :: (Ord k) => [(k, a)] -> Map.Map k [a]
+fromListToLists xs = Map.fromList xs'
+  where xs' = groupKeyList xs

@@ -5,11 +5,12 @@ module Types.Entity.Entity where
 import Parsing.ParseUtils.Serialize
 import Types.World.World
 import Types.Entity.Broadcast
-import Logic.Game.Types (DeltaTime)
+import Types.Logic.Game (DeltaTime)
 import qualified Data.Map.Strict as Map
 
 data EntityData = EntityData {
-    hp :: Int
+    hp :: Int,
+    pos :: Coord
 }
 data EntitySight = EntitySight [Tile] [EntityWrapper]
 

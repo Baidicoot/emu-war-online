@@ -3,6 +3,7 @@
 module Types.World.World where
 
 import Parsing.ParseUtils.ParseUtils
+import Utils.Utils
 
 import GHC.Generics (Generic)
 import Control.DeepSeq (NFData)
@@ -39,10 +40,15 @@ newtype RegionTileData = RegionTileData (VS.Vector Word8) deriving(Generic)
         makeWord8Pair (i, t) = let (a, b) = untile t in
             [(i * 2, a), (i * 2 + 1, b)]
 
-newtype PortalData = PortalData (Array6 Word8, Array6 Word8, Array6 Word8, Array6 Word8) deriving(Generic)
+newtype PortalData = PortalData (Coord, Coord, Coord, Coord) deriving(Generic)
 data Region = Region RegionTileData [PortalData] deriving(Generic) -- parsed form to be used in-game
 
 type RegionIndex = (Word8, Word8, Word8)
+type Coord = Array5 Word8
+
+regionIndex :: Coord -> RegionIndex
+regionIndex (a, b, c, _, _) = (a, b, c)
+
 type RegionMap = Map.Map RegionIndex
 type RegionBlobTable = RegionMap Region
 

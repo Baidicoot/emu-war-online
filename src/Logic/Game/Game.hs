@@ -6,7 +6,7 @@ import Types.Entity.Entity
 import Types.Entity.Broadcast
 import Utils.Utils
 
-import Logic.Game.Types
+import Types.Logic.Game
 
 import qualified Data.Map.Strict as Map
 
@@ -45,3 +45,15 @@ cull :: GameState -> GameState
 cull s = s {entities=e'}
     where
         e' = fmap (\r -> [e | e <- r, hp (getData e) > 0]) (entities s)
+
+migrants :: GameState -> (RegionEntityTable, RegionEntityTable)
+migrants s = (e', m)
+    where
+        e' = Map.mapWithKey (\k es -> filter ((==) k . regionIndex . pos . getData) es) (entities s)
+        n = Map.mapWithKey (\k es -> filter ((/=) k . regionIndex . pos . getData) es) (entities s)
+        m = (Map.fromList . map (\(k, a) -> (k, concat a)) . groupKeyList . Map.toList) n
+
+migrate :: GameState -> GameState
+migrate s = s {entities = m `Map.union` n}
+    where
+        (m, n) = migrants s
